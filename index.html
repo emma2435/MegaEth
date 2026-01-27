@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegaETH TGE Multiplier Board</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-text">MEGA</span>
+                <span class="logo-highlight">ETH</span>
+            </div>
+            <button id="connectWallet" class="wallet-btn">
+                <span class="wallet-icon">🔌</span>
+                <span class="wallet-text">Connect Wallet</span>
+            </button>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-title">
+                <span class="title-line">How Many <span class="highlight">X</span></span>
+                <span class="title-line">Will MegaETH Do</span>
+                <span class="title-line">at <span class="highlight-glow">TGE</span>?</span>
+            </h1>
+            <p class="hero-subtitle">
+                Lock your prediction onchain. <span class="ct-text">CT will remember.</span>
+            </p>
+        </section>
+
+        <!-- Prediction Form -->
+        <section class="prediction-form">
+            <div class="form-card">
+                <div class="card-glow"></div>
+                
+                <div class="form-group">
+                    <label for="userName" class="form-label">Your Name or X Handle</label>
+                    <input 
+                        type="text" 
+                        id="userName" 
+                        class="form-input" 
+                        placeholder="@yourhandle or Name"
+                        maxlength="30"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Your Prediction</label>
+                    <div class="multiplier-grid">
+                        <button class="multiplier-btn" data-value="1">1×</button>
+                        <button class="multiplier-btn" data-value="2">2×</button>
+                        <button class="multiplier-btn" data-value="5">5×</button>
+                        <button class="multiplier-btn" data-value="10">10×</button>
+                        <button class="multiplier-btn" data-value="50">50×</button>
+                        <button class="multiplier-btn" data-value="100">100×</button>
+                    </div>
+                </div>
+
+                <button id="submitPrediction" class="submit-btn" disabled>
+                    <span class="btn-text">Lock Prediction</span>
+                    <span class="btn-icon">🚀</span>
+                </button>
+
+                <div class="disclaimer">
+                    ⚠️ For fun & sentiment tracking only. Not financial advice.
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalPredictions">0</div>
+                    <div class="stat-label">Total Predictions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgMultiplier">0×</div>
+                    <div class="stat-label">Average Multiplier</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="bullishPercent">0%</div>
+                    <div class="stat-label">Bullish (10×+)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chart Section -->
+        <section class="chart-section">
+            <div class="chart-card">
+                <h2 class="section-title">Prediction Distribution</h2>
+                <div class="chart-container">
+                    <canvas id="predictionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Latest Predictions -->
+        <section class="predictions-section">
+            <div class="predictions-card">
+                <h2 class="section-title">Latest Predictions</h2>
+                <div id="predictionsList" class="predictions-list">
+                    <!-- Predictions will be inserted here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built for the MegaETH community 💜</p>
+        </footer>
+    </div>
+
+    <!-- External Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+    
+    <!-- App Script -->
+    <script src="script.js"></script>
+</body>
+</html>
