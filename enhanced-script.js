@@ -16,24 +16,24 @@ const state = {
 // ===================================
 
 const mockPredictions = [
-    { name: '@cryptowhale', multiplier: 100, timestamp: Date.now() - 3600000, eth: 0.01 },
-    { name: 'Vitalik.eth', multiplier: 95, timestamp: Date.now() - 5400000, eth: 0.01 },
-    { name: 'Chad.eth', multiplier: 88, timestamp: Date.now() - 7200000, eth: 0.01 },
-    { name: '@moonboy2024', multiplier: 75, timestamp: Date.now() - 9000000, eth: 0.01 },
-    { name: 'DegenKing', multiplier: 69, timestamp: Date.now() - 10800000, eth: 0.01 },
-    { name: '@hodler4life', multiplier: 50, timestamp: Date.now() - 12600000, eth: 0.01 },
-    { name: 'ETH_Maxi', multiplier: 42, timestamp: Date.now() - 14400000, eth: 0.01 },
-    { name: '@believer', multiplier: 33, timestamp: Date.now() - 16200000, eth: 0.01 },
-    { name: 'Web3_Dev', multiplier: 25, timestamp: Date.now() - 18000000, eth: 0.01 },
-    { name: '@bullishAF', multiplier: 20, timestamp: Date.now() - 19800000, eth: 0.01 },
-    { name: 'Satoshi_Fan', multiplier: 15, timestamp: Date.now() - 21600000, eth: 0.01 },
-    { name: '@cryptoTrader', multiplier: 12, timestamp: Date.now() - 23400000, eth: 0.01 },
-    { name: 'BlockchainBro', multiplier: 10, timestamp: Date.now() - 25200000, eth: 0.01 },
-    { name: '@normalGuy', multiplier: 8, timestamp: Date.now() - 27000000, eth: 0.01 },
-    { name: 'SmartInvestor', multiplier: 5, timestamp: Date.now() - 28800000, eth: 0.01 },
-    { name: '@realist', multiplier: 3, timestamp: Date.now() - 30600000, eth: 0.01 },
-    { name: 'Cautious.eth', multiplier: 2, timestamp: Date.now() - 32400000, eth: 0.01 },
-    { name: '@bear_market', multiplier: 1, timestamp: Date.now() - 34200000, eth: 0.01 },
+    { name: '@cryptowhale', multiplier: 100, timestamp: Date.now() - 3600000 },
+    { name: 'Vitalik.eth', multiplier: 95, timestamp: Date.now() - 5400000 },
+    { name: 'Chad.eth', multiplier: 88, timestamp: Date.now() - 7200000 },
+    { name: '@moonboy2024', multiplier: 75, timestamp: Date.now() - 9000000 },
+    { name: 'DegenKing', multiplier: 69, timestamp: Date.now() - 10800000 },
+    { name: '@hodler4life', multiplier: 50, timestamp: Date.now() - 12600000 },
+    { name: 'ETH_Maxi', multiplier: 42, timestamp: Date.now() - 14400000 },
+    { name: '@believer', multiplier: 33, timestamp: Date.now() - 16200000 },
+    { name: 'Web3_Dev', multiplier: 25, timestamp: Date.now() - 18000000 },
+    { name: '@bullishAF', multiplier: 20, timestamp: Date.now() - 19800000 },
+    { name: 'Satoshi_Fan', multiplier: 15, timestamp: Date.now() - 21600000 },
+    { name: '@cryptoTrader', multiplier: 12, timestamp: Date.now() - 23400000 },
+    { name: 'BlockchainBro', multiplier: 10, timestamp: Date.now() - 25200000 },
+    { name: '@normalGuy', multiplier: 8, timestamp: Date.now() - 27000000 },
+    { name: 'SmartInvestor', multiplier: 5, timestamp: Date.now() - 28800000 },
+    { name: '@realist', multiplier: 3, timestamp: Date.now() - 30600000 },
+    { name: 'Cautious.eth', multiplier: 2, timestamp: Date.now() - 32400000 },
+    { name: '@bear_market', multiplier: 1, timestamp: Date.now() - 34200000 },
 ];
 
 state.predictions = [...mockPredictions];
@@ -53,7 +53,6 @@ const totalPredictionsEl = document.getElementById('totalPredictions');
 const avgMultiplierEl = document.getElementById('avgMultiplier');
 const bullishPercentEl = document.getElementById('bullishPercent');
 const highestPredictionEl = document.getElementById('highestPrediction');
-const totalLockedEl = document.getElementById('totalLocked');
 
 // ===================================
 // WALLET MODAL FUNCTIONS
@@ -228,8 +227,7 @@ async function submitPrediction() {
         const newPrediction = {
             name: state.userName,
             multiplier: state.selectedMultiplier,
-            timestamp: Date.now(),
-            eth: 0.01
+            timestamp: Date.now()
         };
         
         state.predictions.unshift(newPrediction);
@@ -357,9 +355,11 @@ function updateStats() {
         : 0;
     highestPredictionEl.textContent = `${highest}×`;
     
-    // Total locked ETH
-    const totalEth = state.predictions.reduce((sum, p) => sum + (p.eth || 0), 0);
-    totalLockedEl.textContent = `${totalEth.toFixed(2)} ETH`;
+    // Update sidebar total count
+    const sidebarTotal = document.getElementById('totalLockedCount');
+    if (sidebarTotal) {
+        sidebarTotal.textContent = state.predictions.length;
+    }
 }
 
 // ===================================
@@ -569,10 +569,14 @@ INTEGRATION STEPS:
    const signer = provider.getSigner();
    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
    
-   const tx = await contract.submitPrediction(
-       state.selectedMultiplier,
-       { value: ethers.utils.parseEther("0.01") }
-   );
+   // For free predictions (no payment required):
+   const tx = await contract.submitPrediction(state.selectedMultiplier);
+   
+   // OR if you want to make it payable later:
+   // const tx = await contract.submitPrediction(
+   //     state.selectedMultiplier,
+   //     { value: ethers.utils.parseEther("0.01") }
+   // );
    
    const receipt = await tx.wait();
    console.log('Transaction hash:', receipt.transactionHash);
@@ -587,8 +591,7 @@ INTEGRATION STEPS:
        state.predictions = predictions.map(p => ({
            name: p.name,
            multiplier: p.multiplier.toNumber(),
-           timestamp: p.timestamp.toNumber() * 1000,
-           eth: ethers.utils.formatEther(p.amount)
+           timestamp: p.timestamp.toNumber() * 1000
        }));
        
        renderLeaderboard();
@@ -603,13 +606,20 @@ INTEGRATION STEPS:
        loadPredictions();
    });
 
-5. Example ABI:
+5. Example ABI (free predictions, no payment):
 
    const CONTRACT_ABI = [
-       "function submitPrediction(uint8 multiplier) external payable",
-       "function getAllPredictions() external view returns (tuple(address user, string name, uint8 multiplier, uint256 timestamp, uint256 amount)[])",
+       "function submitPrediction(uint8 multiplier) external",
+       "function getAllPredictions() external view returns (tuple(address user, string name, uint8 multiplier, uint256 timestamp)[])",
        "event PredictionSubmitted(address indexed user, uint8 multiplier, uint256 timestamp)"
    ];
+   
+   // OR if you want to make it payable:
+   // const CONTRACT_ABI = [
+   //     "function submitPrediction(uint8 multiplier) external payable",
+   //     "function getAllPredictions() external view returns (tuple(address user, string name, uint8 multiplier, uint256 timestamp, uint256 amount)[])",
+   //     "event PredictionSubmitted(address indexed user, uint8 multiplier, uint256 timestamp)"
+   // ];
 
 For more info: https://docs.ethers.org/v5/
 */
