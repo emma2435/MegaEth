@@ -9,16 +9,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Exo+2:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    <!-- Ethers.js -->
-<script src="https://unpkg.com/ethers@6.10.0/dist/ethers.umd.min.js"></script>
 
-<!-- Web3Modal -->
-<script src="https://unpkg.com/@web3modal/ethers@2.7.1/dist/index.umd.js"></script>
-
-<!-- Your script (LAST) -->
-<script src="script.js"></script>
 
 </head>
+    <!-- Ethers.js (FIRST) -->
+<script src="https://unpkg.com/ethers@6.10.0/dist/ethers.umd.min.js"></script>
+
+<!-- Web3Modal (SECOND) -->
+<script src="https://unpkg.com/@web3modal/ethers@2.7.1/dist/index.umd.js"></script>
+
+<!-- Your app logic (LAST) -->
+<script src="script.js"></script>
+
 <body>
     <!-- Animated Background -->
     <div class="bg-animated"></div>
