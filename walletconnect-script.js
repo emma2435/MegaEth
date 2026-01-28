@@ -30,7 +30,7 @@ function initWeb3Modal() {
             package: window.WalletConnectProvider.default,
             options: {
                 // IMPORTANT: Get your free project ID from https://cloud.walletconnect.com
-                projectId: "YOUR_WALLETCONNECT_PROJECT_ID", // REPLACE THIS WITH YOUR PROJECT ID!
+                projectId: "c701ec114933e11e69760aaa3608796b", // REPLACE THIS WITH YOUR PROJECT ID!
                 rpc: {
                     1: "https://eth.llamarpc.com", // Ethereum mainnet
                     137: "https://polygon-rpc.com", // Polygon
