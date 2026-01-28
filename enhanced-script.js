@@ -2,6 +2,168 @@
 // STATE MANAGEMENT
 // ===================================
 
+// ===================================
+// WEB3MODAL & WALLETCONNECT SETUP
+// ===================================
+
+// Web3Modal instance (global)
+let web3Modal = null;
+let provider = null;
+let web3Provider = null;
+
+// Initialize Web3Modal (call this on page load)
+function initWeb3Modal() {
+    const providerOptions = {
+        walletconnect: {
+            package: window.WalletConnectProvider.default,
+            options: {
+                // Get your project ID from https://cloud.walletconnect.com
+                projectId: "YOUR_WALLETCONNECT_PROJECT_ID", // REPLACE THIS!
+                rpc: {
+                    1: "https://eth.llamarpc.com", // Ethereum mainnet
+                    137: "https://polygon-rpc.com", // Polygon
+                    // Add more networks as needed
+                },
+                chainId: 1, // Default to Ethereum mainnet
+            }
+        },
+        // Add more wallet providers if needed
+    };
+
+    web3Modal = new window.Web3Modal.default({
+        cacheProvider: true, // Remember the wallet
+        providerOptions,
+        disableInjectedProvider: false,
+    });
+}
+
+// ===================================
+// UNIVERSAL WALLET CONNECT FUNCTION
+// ===================================
+
+async function connectWalletUniversal() {
+    try {
+        // Initialize Web3Modal if not already done
+        if (!web3Modal) {
+            initWeb3Modal();
+        }
+
+        // Clear any cached provider if you want fresh connection each time
+        // web3Modal.clearCachedProvider();
+
+        // Open wallet selection modal
+        provider = await web3Modal.connect();
+
+        // Create ethers provider
+        web3Provider = new ethers.providers.Web3Provider(provider);
+        
+        // Get signer and account
+        const signer = web3Provider.getSigner();
+        const account = await signer.getAddress();
+        
+        // Update your state
+        state.walletConnected = true;
+        state.userAddress = account;
+
+        // Update UI
+        updateWalletUI(account);
+        
+        console.log('✅ Wallet connected:', account);
+        showNotification('Wallet Connected! 🎉', 'success');
+
+        // Subscribe to account changes
+        provider.on("accountsChanged", handleAccountsChanged);
+        
+        // Subscribe to chain changes
+        provider.on("chainChanged", handleChainChanged);
+        
+        // Subscribe to disconnect
+        provider.on("disconnect", handleDisconnect);
+
+        return account;
+
+    } catch (error) {
+        console.error('❌ Error connecting wallet:', error);
+        
+        if (error.message && error.message.includes('User closed modal')) {
+            showNotification('Connection cancelled', 'error');
+        } else {
+            showNotification('Failed to connect wallet', 'error');
+        }
+        
+        return null;
+    }
+}
+
+// ===================================
+// WALLET EVENT HANDLERS
+// ===================================
+
+function handleAccountsChanged(accounts) {
+    if (!accounts || accounts.length === 0) {
+        // User disconnected
+        handleDisconnect();
+    } else {
+        // User switched accounts
+        state.userAddress = accounts[0];
+        updateWalletUI(accounts[0]);
+        showNotification('Account changed', 'success');
+    }
+}
+
+function handleChainChanged(chainId) {
+    console.log('Chain changed to:', chainId);
+    // Reload the page to avoid state issues
+    window.location.reload();
+}
+
+async function handleDisconnect() {
+    console.log('Wallet disconnected');
+    
+    state.walletConnected = false;
+    state.userAddress = null;
+    
+    // Clear cached provider
+    if (web3Modal) {
+        await web3Modal.clearCachedProvider();
+    }
+    
+    provider = null;
+    web3Provider = null;
+    
+    // Reload or reset UI
+    window.location.reload();
+}
+
+// ===================================
+// DISCONNECT FUNCTION (Optional - add button for this)
+// ===================================
+
+async function disconnectWallet() {
+    if (provider && provider.disconnect) {
+        await provider.disconnect();
+    }
+    await handleDisconnect();
+}
+
+// ===================================
+// HELPER: Get Current Provider for Transactions
+// ===================================
+
+function getProvider() {
+    if (!web3Provider) {
+        throw new Error('Wallet not connected');
+    }
+    return web3Provider;
+}
+
+function getSigner() {
+    if (!web3Provider) {
+        throw new Error('Wallet not connected');
+    }
+    return web3Provider.getSigner();
+}
+
 const state = {
     walletConnected: false,
     userAddress: null,
